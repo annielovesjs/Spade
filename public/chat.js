@@ -1,5 +1,5 @@
 (() => {
-	let socket = io.connect("http://localhost:3000");
+	let socket = io();
 	let message = document.getElementById("message");
 	let username = document.getElementById("username");
 	let chatID = document.getElementById("chatID");
