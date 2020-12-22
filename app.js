@@ -24,13 +24,16 @@ app.spade = new Spade();
 //listen on every connection
 io.on("connection", (socket) => {
 	console.log("new user connected");
-	//listen on change username
+	//listen on change username -- merge with create room later
 	socket.on("change_username", (data) => {
 		socket.username = data.username;
 		socket.gameRoom = data.gameRoom;
 		socket.join(data.gameRoom);
 		console.log("this is joined: " + data.gameRoom);
 		socket.emit("successfully_joined", { gameRoom: data.gameRoom });
+		socket
+			.to(socket.gameRoom)
+			.emit("new_member", { username: socket.username });
 	});
 
 	socket.on("create_room", (data) => {
@@ -40,6 +43,9 @@ io.on("connection", (socket) => {
 		console.log(socket.gameRoom);
 		socket.join(gameRoomId);
 		socket.emit("successfully_joined", { gameRoom: gameRoomId });
+		socket
+			.to(socket.gameRoom)
+			.emit("new_member", { username: socket.username });
 	});
 	//listen on new message and broadcast to all senders
 	socket.on("new_message", (data) => {
@@ -74,6 +80,14 @@ io.on("connection", (socket) => {
 	//listen for disconnect event
 	socket.on("close_connection", () => {
 		console.log("disconnect");
+		io.in(socket.gameRoom).emit("member_left", { username: socket.username });
+
 		socket.disconnect();
+	});
+
+	//listen for organic disconnect
+	socket.on("disconnect", () => {
+		console.log("organic disconnect");
+		io.in(socket.gameRoom).emit("member_left", { username: socket.username });
 	});
 });

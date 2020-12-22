@@ -25,7 +25,6 @@ document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 });
 
 //join game redirect
-
 join_chat_direct.addEventListener("click", () => {
 	chatID.style.display = "inline-block";
 	send_username.style.display = "inline-block";
@@ -81,6 +80,25 @@ socket.on("new_message", (data) => {
 	chatroom.appendChild(text);
 	chatroom.scrollTop = chatroom.scrollHeight;
 });
+
+//listen on new member join
+socket.on("new_member", (data) => {
+	let text = document.createElement("p");
+	text.classList.add("announcement");
+	text.innerHTML = data.username + " has joined the chat";
+	chatroom.appendChild(text);
+	chatroom.scrollTop = chatroom.scrollHeight;
+});
+
+//listen on member left
+socket.on("member_left", (data) => {
+	let text = document.createElement("p");
+	text.classList.add("announcement");
+	text.innerHTML = data.username + " has left the chat";
+	chatroom.appendChild(text);
+	chatroom.scrollTop = chatroom.scrollHeight;
+});
+
 //emit message
 send_message.addEventListener("click", () => {
 	socket.emit("new_message", { message: message.value });
