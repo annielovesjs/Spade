@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" const="text/html;charset=UTF-8" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+
+		<title>Spade</title>
+	</head>
+
+	<body>
+		<section id="card">
+			<section id="card_back">
+				<img src="logo.svg" />
+
+				<input id="reenter_room" type="text" placeholder="Chatroom Code" />
+			</section>
+			<div class="chatroom_nav">
+				<img class="logo" src="logo.svg" />
+				<div id="chatroomTitle"></div>
+				<div id="close_chat">
+					<img src="exit.svg" />
+				</div>
+			</div>
+			<section id="chatbox">
+				<div id="myModal" class="modal">
+					<!-- Modal content -->
+					<div class="modal-content">
+						<div class="intro">
+							<h3>Welcome to Spade</h3>
+							<h4>A temporary messaging app</h4>
+							<p><i>Hint: Press esc key to clear chat content</i></p>
+						</div>
+						<div id="joinRoomForm">
+							<input id="username" placeholder="Enter name ... " type="text" />
+							<button id="create_room" type="button">Start New Chat</button>
+							<input
+								id="chatID"
+								placeholder="Enter chatroom code ... "
+								type="text"
+							/>
+							<button id="send_username" type="button">Join Chat</button>
+						</div>
+					</div>
+				</div>
+				<section id="chatroom"></section>
+				<section id="card_bottom">
+					<section id="feedback"></section>
+
+					<section id="input_zone">
+						<input
+							id="message"
+							placeholder="Write a message ... "
+							class="vertical-align"
+							type="text"
+						/>
+						<div id="send_message">
+							<img src="send.svg" />
+						</div>
+					</section>
+				</section>
+			</section>
+		</section>
+
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script src="chat.js"></script>
+	</body>
+</html>

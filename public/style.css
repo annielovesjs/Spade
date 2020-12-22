@@ -1,0 +1,268 @@
+@mixin vertical-align {
+	position: relative;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+::placeholder {
+	color: rgba(255, 255, 255, 0.548);
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	margin: 0px;
+	height: 100%;
+	font-family: "Open Sans", sans-serif;
+	background: linear-gradient(45deg, black, transparent);
+	display: flex;
+	align-items: center;
+}
+
+input {
+	background: transparent;
+	color: white;
+	outline: none;
+}
+
+button {
+	font-family: "Open Sans";
+	font-size: 2.5vh;
+	padding: 5px;
+}
+
+header {
+	text-align: center;
+}
+
+h1 {
+	font-family: "Open Sans", sans-serif;
+	margin: 0px;
+}
+
+input {
+	font-size: 2.5vh;
+	padding: 5px;
+	font-family: "Open Sans", sans-serif;
+}
+
+.intro {
+	text-align: center;
+}
+
+.intro h3 {
+	font-size: 4vh;
+}
+
+.intro h4 {
+	font-size: 2.3vh;
+}
+
+.intro p {
+	font-size: 1.6vh;
+}
+
+div#joinRoomForm {
+	display: inline-block;
+	display: flex;
+	flex-direction: column;
+	max-width: 80%;
+	margin: 0 auto;
+	padding: 3vh 0vh;
+}
+
+#chatbox {
+	height: 80%;
+	max-width: 1000px;
+	margin: 0 auto;
+	border-top: 5px solid #d0be8c;
+}
+
+#close_chat {
+	border-radius: 100%;
+	display: flex;
+	padding: 10px;
+	margin: auto 0;
+	cursor: pointer;
+	background: #8080801f;
+	transition: background 0.4s;
+}
+
+#close_chat:hover {
+	background: #80808059;
+}
+
+#card {
+	height: 90%;
+	width: 80%;
+	max-width: 1000px;
+	margin: 0 auto;
+	border: 5px solid #d0be8c;
+	border-radius: 10px;
+	position: relative;
+}
+
+#card_back {
+	height: 100%;
+	position: absolute;
+	background: #cfbe88;
+	width: 100%;
+	z-index: 1;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	display: none;
+}
+
+#card_back img {
+	width: 20vh;
+}
+
+#card_back input {
+	margin: 2vh auto;
+}
+
+.chatroom_nav {
+	display: flex;
+	justify-content: space-between;
+	padding: 1vh;
+}
+
+.chatroom_nav img {
+	width: 4vh;
+}
+
+.chatroom_nav img.logo {
+	width: 7vh;
+}
+
+#chatroomTitle {
+	font-weight: bolder;
+	font-size: 3vh;
+	padding: 5px;
+}
+
+section#chatroom {
+	height: 100%;
+	overflow: auto;
+	padding: 1vh;
+	padding-bottom: 4vh;
+}
+
+#card_bottom {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+
+#feedback {
+	padding: 0vh 2vh;
+}
+
+section#input_zone {
+	width: 100%;
+	text-align: center;
+	padding: 2vh;
+	display: flex;
+	justify-content: center;
+}
+
+input#message {
+	width: 80%;
+	font-family: "Open Sans", sans-serif;
+	font-size: 2.5vh;
+	border-radius: 40px;
+	border: 3px solid #cfbe88;
+	background: transparent;
+	color: white;
+}
+
+p.message,
+p.myMessage {
+	font-size: 2.5vh;
+	font-family: "Open Sans", sans-serif;
+	padding: 10px 20px;
+	border-radius: 30px;
+	margin: 1%;
+	overflow-wrap: anywhere;
+}
+
+p.message {
+	background: #1b1b1bbf;
+	color: white;
+}
+
+p.myMessage {
+	background: gold;
+}
+
+.myMessageText,
+.messageText {
+	width: 100%;
+	display: flex;
+}
+
+.myMessageText {
+	justify-content: flex-end;
+}
+
+#send_message {
+	margin: 0px 10px;
+	cursor: pointer;
+}
+
+#send_message img {
+	width: 6vh;
+}
+
+.modal {
+	display: flex;
+	align-items: center;
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(10px);
+}
+
+/* Modal Content/Box */
+.modal-content {
+	background: linear-gradient(-118deg, #f9dc8a, transparent);
+	max-width: 600px;
+	border-radius: 5px;
+	margin: 15% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.modal-content button {
+	background: #383838;
+	border: 1px solid #383838;
+	color: white;
+	cursor: pointer;
+	margin: 1vh 0vh;
+	border-radius: 5px;
+}
+
+.modal-content input,
+input {
+	border: 1px solid #ffffff9c;
+	border-radius: 5px;
+}
+.modal-content button:hover {
+	background: black;
+	border: 1px solid black;
+}
