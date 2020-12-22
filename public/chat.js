@@ -1,143 +1,141 @@
-(() => {
-	let socket = io();
-	let message = document.getElementById("message");
-	let username = document.getElementById("username");
-	let chatID = document.getElementById("chatID");
-	let send_message = document.getElementById("send_message");
-	let send_username = document.getElementById("send_username");
-	let chatroom = document.getElementById("chatroom");
-	let feedback = document.getElementById("feedback");
-	var modal = document.getElementById("myModal");
-	var exit = document.getElementById("close_chat");
-	let create_room = document.getElementById("create_room");
-	let chatroomTitle = document.getElementById("chatroomTitle");
-	let card_back = document.getElementById("card_back");
-	let reenter_room = document.getElementById("reenter_room");
+let socket = io();
+let message = document.getElementById("message");
+let username = document.getElementById("username");
+let chatID = document.getElementById("chatID");
+let send_message = document.getElementById("send_message");
+let send_username = document.getElementById("send_username");
+let chatroom = document.getElementById("chatroom");
+let feedback = document.getElementById("feedback");
+var modal = document.getElementById("myModal");
+var exit = document.getElementById("close_chat");
+let create_room = document.getElementById("create_room");
+let chatroomTitle = document.getElementById("chatroomTitle");
+let card_back = document.getElementById("card_back");
+let reenter_room = document.getElementById("reenter_room");
 
-	username.focus();
+username.focus();
 
-	document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
-		if (e.key == "Escape") {
-			chatroom.innerHTML = "";
+document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
+	if (e.key == "Escape") {
+		chatroom.innerHTML = "";
+	}
+});
+
+//emit a username
+send_username.addEventListener("click", () => {
+	user = username.value;
+	socket.emit("change_username", {
+		username: username.value,
+		gameRoom: chatID.value,
+	});
+});
+
+create_room.addEventListener("click", () => {
+	socket.emit("create_room", { username: username.value });
+});
+
+//admit to game room
+socket.on("successfully_joined", (data) => {
+	modal.style.display = "none";
+	chatroomTitle.innerHTML = "Room: " + data.gameRoom;
+	message.focus();
+});
+
+chatID.addEventListener("keyup", (e) => {
+	if (e.key === "Enter") {
+		// Cancel the default action, if needed
+		e.preventDefault();
+		// Trigger the button element with a click
+		send_username.click();
+	}
+});
+
+//listen on enter key for username
+username.addEventListener("keyup", (e) => {
+	if (e.key === "Enter") {
+		// Cancel the default action, if needed
+		e.preventDefault();
+		// Trigger the button element with a click
+		create_room.click();
+	}
+});
+
+//listen on new message
+socket.on("new_message", (data) => {
+	let text = document.createElement("div");
+	text.classList.add("messageText");
+	text.innerHTML =
+		"<p class='message'>" + data.username + ": " + data.message + "</p>";
+	chatroom.appendChild(text);
+	chatroom.scrollTop = chatroom.scrollHeight;
+});
+//emit message
+send_message.addEventListener("click", () => {
+	socket.emit("new_message", { message: message.value });
+	let text = document.createElement("div");
+	text.classList.add("myMessageText");
+	text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
+	chatroom.appendChild(text);
+	chatroom.scrollTop = chatroom.scrollHeight;
+	message.value = "";
+});
+
+let typingTimer;
+let doneTypingInterval = 1000;
+//emit typing event
+message.addEventListener("keydown", () => {
+	socket.emit("typing");
+});
+
+//check if stopped typing or if enter key is hit
+message.addEventListener("keyup", (e) => {
+	if (e.key === "Enter") {
+		// Cancel the default action, if needed
+		e.preventDefault();
+		// Trigger the button element with a click
+		send_message.click();
+	} else {
+		clearTimeout(typingTimer);
+		if (message.value) {
+			typingTimer = setTimeout(() => {
+				socket.emit("stopped_typing");
+			}, doneTypingInterval);
 		}
-	});
+	}
+});
 
-	//emit a username
-	send_username.addEventListener("click", () => {
-		user = username.value;
-		socket.emit("change_username", {
-			username: username.value,
-			gameRoom: chatID.value,
-		});
-	});
+//listen to lock event
+socket.on("lock", () => {
+	card_back.style.display = "flex";
+	reenter_room.focus();
+});
 
-	create_room.addEventListener("click", () => {
-		socket.emit("create_room", { username: username.value });
-	});
+//listen on enter key for username
+reenter_room.addEventListener("keyup", (e) => {
+	if (e.key === "Enter") {
+		// Cancel the default action, if needed
+		e.preventDefault();
+		// Trigger the button element with a click
+		socket.emit("unlock", { code: reenter_room.value });
+	}
+});
 
-	//admit to game room
-	socket.on("successfully_joined", (data) => {
-		modal.style.display = "none";
-		chatroomTitle.innerHTML = data.gameRoom;
-		message.focus();
-	});
+socket.on("unlock", () => {
+	card_back.style.display = "none";
+});
 
-	chatID.addEventListener("keyup", (e) => {
-		if (e.key === "Enter") {
-			// Cancel the default action, if needed
-			e.preventDefault();
-			// Trigger the button element with a click
-			send_username.click();
-		}
-	});
+//listen on typing event
+socket.on("typing", (data) => {
+	feedback.innerHTML = "<i>" + data.username + " is typing ... </i>";
+});
+socket.on("stopped_typing", (data) => {
+	feedback.innerHTML = "";
+});
 
-	//listen on enter key for username
-	username.addEventListener("keyup", (e) => {
-		if (e.key === "Enter") {
-			// Cancel the default action, if needed
-			e.preventDefault();
-			// Trigger the button element with a click
-			create_room.click();
-		}
+//send close connection
+exit.addEventListener("click", () => {
+	axios.get("/").then(() => {
+		socket.emit("close_connection");
+		location.reload();
 	});
-
-	//listen on new message
-	socket.on("new_message", (data) => {
-		let text = document.createElement("div");
-		text.classList.add("messageText");
-		text.innerHTML =
-			"<p class='message'>" + data.username + ": " + data.message + "</p>";
-		chatroom.appendChild(text);
-		chatroom.scrollTop = chatroom.scrollHeight;
-	});
-	//emit message
-	send_message.addEventListener("click", () => {
-		socket.emit("new_message", { message: message.value });
-		let text = document.createElement("div");
-		text.classList.add("myMessageText");
-		text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
-		chatroom.appendChild(text);
-		chatroom.scrollTop = chatroom.scrollHeight;
-		message.value = "";
-	});
-
-	let typingTimer;
-	let doneTypingInterval = 1000;
-	//emit typing event
-	message.addEventListener("keydown", () => {
-		socket.emit("typing");
-	});
-
-	//check if stopped typing or if enter key is hit
-	message.addEventListener("keyup", (e) => {
-		if (e.key === "Enter") {
-			// Cancel the default action, if needed
-			e.preventDefault();
-			// Trigger the button element with a click
-			send_message.click();
-		} else {
-			clearTimeout(typingTimer);
-			if (message.value) {
-				typingTimer = setTimeout(() => {
-					socket.emit("stopped_typing");
-				}, doneTypingInterval);
-			}
-		}
-	});
-
-	//listen to lock event
-	socket.on("lock", () => {
-		card_back.style.display = "flex";
-		reenter_room.focus();
-	});
-
-	//listen on enter key for username
-	reenter_room.addEventListener("keyup", (e) => {
-		if (e.key === "Enter") {
-			// Cancel the default action, if needed
-			e.preventDefault();
-			// Trigger the button element with a click
-			socket.emit("unlock", { code: reenter_room.value });
-		}
-	});
-
-	socket.on("unlock", () => {
-		card_back.style.display = "none";
-	});
-
-	//listen on typing event
-	socket.on("typing", (data) => {
-		feedback.innerHTML = "<i>" + data.username + " is typing ... </i>";
-	});
-	socket.on("stopped_typing", (data) => {
-		feedback.innerHTML = "";
-	});
-
-	//send close connection
-	exit.addEventListener("click", () => {
-		axios.get("/").then(() => {
-			socket.emit("close_connection");
-			location.reload();
-		});
-	});
-})();
+});
