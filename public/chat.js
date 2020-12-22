@@ -12,6 +12,9 @@ let create_room = document.getElementById("create_room");
 let chatroomTitle = document.getElementById("chatroomTitle");
 let card_back = document.getElementById("card_back");
 let reenter_room = document.getElementById("reenter_room");
+let join_chat_direct = document.getElementById("join_chat_direct");
+let joinRoomForm = document.getElementById("joinRoomForm");
+let intro = document.getElementsByClassName("intro")[0];
 
 username.focus();
 
@@ -19,6 +22,15 @@ document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 	if (e.key == "Escape") {
 		chatroom.innerHTML = "";
 	}
+});
+
+//join game redirect
+
+join_chat_direct.addEventListener("click", () => {
+	chatID.style.display = "inline-block";
+	send_username.style.display = "inline-block";
+	joinRoomForm.style.display = "none";
+	intro.style.display = "none";
 });
 
 //emit a username
@@ -122,6 +134,7 @@ reenter_room.addEventListener("keyup", (e) => {
 
 socket.on("unlock", () => {
 	card_back.style.display = "none";
+	message.focus();
 });
 
 //listen on typing event

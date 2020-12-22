@@ -246,9 +246,27 @@ p.myMessage {
 	padding: 1.5vh;
 }
 
+.modal-content input {
+	margin-bottom: 1.5vh;
+}
+
 .modal-content button:hover {
 	background: black;
 	border: 1px solid black;
+}
+
+#chatID {
+	display: none;
+}
+
+#send_username {
+	display: none;
+}
+
+#enter_room_form {
+	display: flex;
+	flex-direction: column;
+	width: 50vh;
 }
 
 @media (min-width: 600px) {
