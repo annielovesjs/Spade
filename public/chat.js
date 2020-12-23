@@ -19,6 +19,14 @@ let nameError = document.getElementById("nameError");
 let roomNameError = document.getElementById("roomNameError");
 
 username.focus();
+window.notificationCount = 0;
+
+document.addEventListener("visibilitychange", function () {
+	if (!document.hidden) {
+		document.title = "Spade";
+		window.notificationCount = 0;
+	}
+});
 
 document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 	if (e.key == "Escape") {
@@ -93,6 +101,10 @@ socket.on("new_message", (data) => {
 		"<p class='message'>" + data.username + ": " + data.message + "</p>";
 	chatroom.appendChild(text);
 	chatroom.scrollTop = chatroom.scrollHeight;
+	if (document.hidden) {
+		window.notificationCount += 1;
+		document.title = "(" + window.notificationCount + ") Spade";
+	}
 });
 
 //listen on help
