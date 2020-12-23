@@ -17,6 +17,7 @@ let joinRoomForm = document.getElementById("joinRoomForm");
 let intro = document.getElementsByClassName("intro")[0];
 let nameError = document.getElementById("nameError");
 let roomNameError = document.getElementById("roomNameError");
+const audio = new Audio("Quack.mp3");
 
 username.focus();
 window.notificationCount = 0;
@@ -104,7 +105,20 @@ socket.on("new_message", (data) => {
 	if (document.hidden) {
 		window.notificationCount += 1;
 		document.title = "(" + window.notificationCount + ") Spade";
+		if (socket.quack) {
+			audio.play();
+		}
 	}
+});
+
+//listen to quack
+socket.on("quack", () => {
+	socket.quack = true;
+});
+
+//listen to unquack
+socket.on("noquack", () => {
+	socket.quack = false;
 });
 
 //listen on help

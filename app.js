@@ -56,6 +56,10 @@ io.on("connection", (socket) => {
 			socket.emit("help");
 		} else if (data.message == "wipe#") {
 			io.in(socket.gameRoom).emit("wipe");
+		} else if (data.message == "quack#") {
+			socket.emit("quack");
+		} else if (data.message == "noquack#") {
+			socket.emit("noquack");
 		} else {
 			socket.to(socket.gameRoom).emit("new_message", {
 				message: data.message,
