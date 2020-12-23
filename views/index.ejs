@@ -40,12 +40,16 @@
 							<p><i>Hint: Press esc key to clear chat content</i></p>
 						</div>
 						<div id="joinRoomForm">
+							<p class="error" id="nameError">Please enter a name</p>
 							<input id="username" placeholder="Enter name ... " type="text" />
 
 							<button id="create_room" type="button">Start New Chat</button>
 							<button id="join_chat_direct" type="button">Join Chat</button>
 						</div>
 						<div id="enter_room_form">
+							<p class="error" id="roomNameError">
+								Please enter valid room code
+							</p>
 							<input
 								id="chatID"
 								placeholder="Enter chatroom code ... "

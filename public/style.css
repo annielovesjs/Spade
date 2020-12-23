@@ -67,6 +67,20 @@ div#joinRoomForm {
 	display: flex;
 	flex-direction: column;
 	padding: 3vh 0vh;
+	position: relative;
+	padding-top: 5vh;
+}
+
+.error {
+	position: absolute;
+	top: 0;
+	color: #961010;
+	font-style: italic;
+}
+
+#nameError,
+#roomNameError {
+	display: none;
 }
 
 #card {
@@ -275,6 +289,8 @@ p.myMessage {
 	display: flex;
 	flex-direction: column;
 	width: 50vh;
+	position: relative;
+	padding-top: 5vh;
 }
 
 @media (min-width: 600px) {

@@ -15,6 +15,8 @@ let reenter_room = document.getElementById("reenter_room");
 let join_chat_direct = document.getElementById("join_chat_direct");
 let joinRoomForm = document.getElementById("joinRoomForm");
 let intro = document.getElementsByClassName("intro")[0];
+let nameError = document.getElementById("nameError");
+let roomNameError = document.getElementById("roomNameError");
 
 username.focus();
 
@@ -26,23 +28,35 @@ document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 
 //join game redirect
 join_chat_direct.addEventListener("click", () => {
-	chatID.style.display = "inline-block";
-	send_username.style.display = "inline-block";
-	joinRoomForm.style.display = "none";
-	intro.style.display = "none";
+	if (username.value) {
+		chatID.style.display = "inline-block";
+		send_username.style.display = "inline-block";
+		joinRoomForm.style.display = "none";
+		intro.style.display = "none";
+	} else {
+		nameError.style.display = "block";
+	}
 });
 
 //emit a username
 send_username.addEventListener("click", () => {
-	user = username.value;
-	socket.emit("change_username", {
-		username: username.value,
-		gameRoom: chatID.value,
-	});
+	if (chatID.value) {
+		user = username.value;
+		socket.emit("change_username", {
+			username: username.value,
+			gameRoom: chatID.value,
+		});
+	} else {
+		roomNameError.style.display = "block";
+	}
 });
 
 create_room.addEventListener("click", () => {
-	socket.emit("create_room", { username: username.value });
+	if (username.value) {
+		socket.emit("create_room", { username: username.value });
+	} else {
+		nameError.style.display = "block";
+	}
 });
 
 //admit to game room
@@ -116,13 +130,15 @@ socket.on("member_left", (data) => {
 
 //emit message
 send_message.addEventListener("click", () => {
-	socket.emit("new_message", { message: message.value });
-	let text = document.createElement("div");
-	text.classList.add("myMessageText");
-	text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
-	chatroom.appendChild(text);
-	chatroom.scrollTop = chatroom.scrollHeight;
-	message.value = "";
+	if (message.value) {
+		socket.emit("new_message", { message: message.value });
+		let text = document.createElement("div");
+		text.classList.add("myMessageText");
+		text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
+		chatroom.appendChild(text);
+		chatroom.scrollTop = chatroom.scrollHeight;
+		message.value = "";
+	}
 });
 
 let typingTimer;
