@@ -81,6 +81,21 @@ socket.on("new_message", (data) => {
 	chatroom.scrollTop = chatroom.scrollHeight;
 });
 
+//listen on help
+socket.on("help", () => {
+	let text = document.createElement("div");
+	text.classList.add("messageText");
+	text.innerHTML =
+		"<p class='message'>Hit esc key: to erase your chat of content </br></br>Enter wipe# in Chat: Wipes all content from the chat for everyone in the room</br></br> Enter s# in Chat: Locks the chat. You can unlock by entering the room code.  </p>";
+	chatroom.appendChild(text);
+	chatroom.scrollTop = chatroom.scrollHeight;
+});
+
+//listen on wipe chat
+socket.on("wipe", () => {
+	chatroom.innerHTML = "";
+});
+
 //listen on new member join
 socket.on("new_member", (data) => {
 	let text = document.createElement("p");

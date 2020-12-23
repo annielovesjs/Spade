@@ -52,6 +52,10 @@ io.on("connection", (socket) => {
 		console.log("this is my id: " + socket.gameRoom);
 		if (data.message == "s#") {
 			socket.emit("lock");
+		} else if (data.message == "help#") {
+			socket.emit("help");
+		} else if (data.message == "wipe#") {
+			io.in(socket.gameRoom).emit("wipe");
 		} else {
 			socket.to(socket.gameRoom).emit("new_message", {
 				message: data.message,
