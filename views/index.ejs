@@ -64,13 +64,26 @@
 					<section id="feedback"></section>
 
 					<section id="input_zone">
-						<input
-							id="message"
-							placeholder="Write a message ... "
-							class="vertical-align"
-							type="text"
-						/>
-						<div id="send_message">
+						<div class="inputIcon icon">
+							<label for="imagePicker">
+								<img src="img.svg" />
+							</label>
+							<input
+								type="file"
+								id="imagePicker"
+								name="imagePicker"
+								accept="image/png, image/jpeg"
+							/>
+						</div>
+						<div class="inputPad">
+							<input
+								id="message"
+								placeholder="Write a message ... "
+								class="vertical-align"
+								type="text"
+							/>
+						</div>
+						<div id="send_message" class="inputIcon icon">
 							<img src="send_spade.svg" />
 						</div>
 					</section>

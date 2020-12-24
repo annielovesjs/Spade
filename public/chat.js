@@ -10,6 +10,7 @@ var modal = document.getElementById("myModal");
 var exit = document.getElementById("close_chat");
 let create_room = document.getElementById("create_room");
 let chatroomTitle = document.getElementById("chatroomTitle");
+let card = document.getElementById("card");
 let card_back = document.getElementById("card_back");
 let reenter_room = document.getElementById("reenter_room");
 let join_chat_direct = document.getElementById("join_chat_direct");
@@ -17,6 +18,10 @@ let joinRoomForm = document.getElementById("joinRoomForm");
 let intro = document.getElementsByClassName("intro")[0];
 let nameError = document.getElementById("nameError");
 let roomNameError = document.getElementById("roomNameError");
+let imgPicker = document.getElementById("imagePicker");
+let input_zone = document.getElementById("input_zone");
+let inputPad = document.getElementsByClassName("inputPad")[0];
+
 const audio = new Audio("Quack.mp3");
 
 username.focus();
@@ -28,6 +33,73 @@ document.addEventListener("visibilitychange", function () {
 		window.notificationCount = 0;
 	}
 });
+
+function openGallery(e) {
+	console.log(e);
+	let galleryWindow = document.createElement("div");
+	galleryWindow.classList.add("galleryWindow");
+	let galleryNav = document.createElement("div");
+	galleryNav.classList.add("galleryNav");
+	galleryNav.innerHTML =
+		"<div class='icon galleryExit' onclick='closeGallery()'><img src='exit.svg'/></div>";
+	galleryWindow.append(galleryNav);
+	let imgGallery = document.createElement("img");
+	imgGallery.src = e.src;
+	galleryWindow.append(imgGallery);
+	card.append(galleryWindow);
+}
+
+function closeGallery() {
+	document.getElementsByClassName("galleryWindow")[0].remove();
+}
+
+function removeImage() {
+	document.getElementById("imagePicker").value = null;
+	document.getElementsByClassName("thumbnail")[0].remove();
+	inputPad.style.padding = "0px";
+}
+
+function handleFileSelect(evt) {
+	var files = evt.target.files; // FileList object
+
+	// Loop through the FileList and render image files as thumbnails.
+	for (var i = 0, f; (f = files[i]); i++) {
+		// Only process image files.
+		if (!f.type.match("image.*")) {
+			continue;
+		}
+
+		var reader = new FileReader();
+
+		// Closure to capture the file information.
+		reader.onload = (function (theFile) {
+			return function (e) {
+				//remove existing thumbnail
+				let thumbnailExists = document.getElementsByClassName("thumbnail")[0];
+				if (thumbnailExists) {
+					thumbnailExists.remove();
+				}
+				// Render thumbnail.
+				var span = document.createElement("span");
+				span.classList.add("thumbnail");
+				span.innerHTML = [
+					'<div class="removeImage icon" onclick="removeImage()"><img class="removeSvg" src="exit.svg"/></div><img id="thumb" src="',
+					e.target.result,
+					'" title="',
+					escape(theFile.name),
+					'"/>',
+				].join("");
+				inputPad.style.padding = "15px";
+				inputPad.insertBefore(span, inputPad.childNodes[0]);
+			};
+		})(f);
+
+		// Read in the image file as a data URL.
+		reader.readAsDataURL(f);
+	}
+}
+
+imgPicker.addEventListener("change", handleFileSelect, false);
 
 document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 	if (e.key == "Escape") {
@@ -96,11 +168,20 @@ username.addEventListener("keyup", (e) => {
 
 //listen on new message
 socket.on("new_message", (data) => {
-	let text = document.createElement("div");
-	text.classList.add("messageText");
-	text.innerHTML =
-		"<p class='message'>" + data.username + ": " + data.message + "</p>";
-	chatroom.appendChild(text);
+	if (data.message) {
+		let text = document.createElement("div");
+		text.classList.add("messageText");
+		text.innerHTML =
+			"<p class='message'>" + data.username + ": " + data.message + "</p>";
+		chatroom.appendChild(text);
+	}
+
+	if (data.hasImage) {
+		let img = document.createElement("div");
+		img.classList.add("messageText");
+		img.innerHTML = "<img class='messageImg' src='" + data.image + "'/>";
+		chatroom.appendChild(img);
+	}
 	chatroom.scrollTop = chatroom.scrollHeight;
 	if (document.hidden) {
 		window.notificationCount += 1;
@@ -156,14 +237,36 @@ socket.on("member_left", (data) => {
 
 //emit message
 send_message.addEventListener("click", () => {
-	if (message.value) {
-		socket.emit("new_message", { message: message.value });
-		let text = document.createElement("div");
-		text.classList.add("myMessageText");
-		text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
-		chatroom.appendChild(text);
+	inputPad.style.padding = "0px";
+
+	if (message.value || imgPicker.files.length > 0) {
+		socket.emit("new_message", {
+			message: message.value,
+			hasImage: document.getElementById("thumb") ? true : false,
+			image: !document.getElementById("thumb")
+				? ""
+				: document.getElementById("thumb").src,
+		});
+		if (message.value) {
+			let text = document.createElement("div");
+			text.classList.add("myMessageText");
+			text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
+			chatroom.appendChild(text);
+		}
+
+		if (imgPicker.files.length > 0) {
+			let img = document.createElement("div");
+			img.classList.add("myMessageText");
+			img.innerHTML =
+				"<img class='messageImg' onclick='openGallery(this)' src='" +
+				document.getElementById("thumb").src +
+				"'/>";
+			chatroom.appendChild(img);
+			document.getElementsByClassName("thumbnail")[0].remove();
+		}
 		chatroom.scrollTop = chatroom.scrollHeight;
 		message.value = "";
+		imgPicker.value = null;
 	}
 });
 

@@ -65,6 +65,8 @@ io.on("connection", (socket) => {
 				message: data.message,
 				username: socket.username,
 				gameRoom: socket.gameRoom,
+				hasImage: data.hasImage,
+				image: data.image,
 			});
 		}
 	});
