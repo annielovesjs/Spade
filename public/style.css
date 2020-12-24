@@ -227,6 +227,7 @@ section#chatroom {
 .announcement {
 	text-align: center;
 	font-style: italic;
+	color: #dadada;
 }
 
 #card_bottom {
@@ -308,12 +309,13 @@ input#message {
 }
 
 .message {
-	background: #1b1b1bbf;
+	background: #1b1b1b7a;
 	color: white;
 }
 
 .myMessage {
-	background: gold;
+	background: black;
+	color: #cfbe88;
 }
 
 .myMessageText,
