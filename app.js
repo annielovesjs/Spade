@@ -80,6 +80,8 @@ io.on("connection", (socket) => {
 	socket.on("unlock", (data) => {
 		if (data.code == socket.gameRoom) {
 			socket.emit("unlock");
+		} else {
+			socket.emit("failed_unlock");
 		}
 	});
 

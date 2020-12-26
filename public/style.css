@@ -372,7 +372,8 @@ input#message {
 #imagePicker,
 #nameError,
 #roomNameError,
-#nameJoinError {
+#nameJoinError,
+#unlockError {
 	display: none;
 	position: relative;
 }

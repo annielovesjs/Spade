@@ -25,6 +25,7 @@ let intro = document.getElementsByClassName("intro")[0];
 let nameError = document.getElementById("nameError");
 let roomNameError = document.getElementById("roomNameError");
 let nameJoinError = document.getElementById("nameJoinError");
+let unlockError = document.getElementById("unlockError");
 let imgPicker = document.getElementById("imagePicker");
 let inputPad = document.getElementsByClassName("inputPad")[0];
 
@@ -51,6 +52,11 @@ function createEnterEvent(e, desiredEl) {
 		e.preventDefault();
 		desiredEl.click();
 	}
+}
+
+function displayError(errorEl, text) {
+	errorEl.innerHTML = text;
+	errorEl.style.display = "block";
 }
 
 function openGallery(e) {
@@ -154,28 +160,34 @@ create_room_direct.addEventListener("click", () => {
 
 //join chat room
 send_username.addEventListener("click", () => {
-	if (chatID.value) {
-		user = username.value;
-		socket.emit("create_or_join_room", {
-			username: username.value,
-			gameRoom: chatID.value.toLowerCase(),
-			hosting: false,
-		});
+	if (username.value) {
+		if (chatID.value) {
+			user = username.value;
+			socket.emit("create_or_join_room", {
+				username: username.value,
+				gameRoom: chatID.value.toLowerCase(),
+				hosting: false,
+			});
+			roomNameError.style.display = "none";
+		} else {
+			displayError(roomNameError, "Please enter valid room code");
+		}
 	} else {
-		roomNameError.style.display = "block";
+		displayError(nameJoinError, "Please enter a name");
 	}
 });
 
 //check for invalid room
 socket.on("invalid_code", () => {
-	roomNameError.innerHTML = "Invalid room, please double check the code.";
-	roomNameError.style.display = "block";
+	displayError(roomNameError, "Invalid room, please double check the code.");
 });
 
 //check for name already exists error
 socket.on("name_exists", () => {
-	nameJoinError.innerHTML = "Name is already taken by another user in the chat";
-	nameJoinError.style.display = "block";
+	displayError(
+		nameJoinError,
+		"Name is already taken by another user in the chat"
+	);
 });
 
 //create room button
@@ -186,7 +198,7 @@ create_room.addEventListener("click", () => {
 			hosting: true,
 		});
 	} else {
-		nameError.style.display = "block";
+		displayError(nameError, "Please enter a name");
 	}
 });
 
@@ -329,8 +341,14 @@ socket.on("lock", () => {
 	reenter_room.focus();
 });
 
+//listen to unlock click
 unlock_room.addEventListener("click", () => {
 	socket.emit("unlock", { code: reenter_room.value });
+});
+
+//failed unlock event
+socket.on("failed_unlock", () => {
+	displayError(unlockError, "Wrong code, try again.");
 });
 
 //listen on enter key for username
@@ -341,6 +359,7 @@ reenter_room.addEventListener("keyup", (e) => {
 //unlock room
 socket.on("unlock", () => {
 	card_back.style.display = "none";
+	unlockError.style.display = "none";
 	message.focus();
 });
 
