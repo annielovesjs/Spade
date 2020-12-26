@@ -313,6 +313,7 @@ send_message.addEventListener("click", () => {
 		message.value = "";
 		imgPicker.value = null;
 	}
+	message.focus();
 });
 
 let typingTimer;
