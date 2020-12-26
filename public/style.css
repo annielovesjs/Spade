@@ -70,6 +70,7 @@ h1 {
 .joiningPage,
 #createRoomPage {
 	display: none;
+	max-width: 80%;
 }
 
 .landingPage,
