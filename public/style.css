@@ -341,7 +341,7 @@ input#message {
 	justify-content: flex-end;
 }
 
-#send_message img {
+.inputIcon img {
 	width: 6vh;
 }
 
