@@ -55,16 +55,17 @@ io.on("connection", (socket) => {
 
 	//listen on new message and broadcast to all senders
 	socket.on("new_message", (data) => {
+		let messageLower = data.message.toLowerCase();
 		console.log("this is my id: " + socket.gameRoom);
-		if (data.message == "s#") {
+		if (messageLower == "s#") {
 			socket.emit("lock");
-		} else if (data.message == "help#") {
+		} else if (messageLower == "help#") {
 			socket.emit("help");
-		} else if (data.message == "wipe#") {
+		} else if (messageLower == "wipe#") {
 			io.in(socket.gameRoom).emit("wipe", { username: socket.username });
-		} else if (data.message == "quack#") {
+		} else if (messageLower == "quack#") {
 			socket.emit("quack");
-		} else if (data.message == "noquack#") {
+		} else if (messageLower == "noquack#") {
 			socket.emit("noquack");
 		} else {
 			socket.to(socket.gameRoom).emit("new_message", {
