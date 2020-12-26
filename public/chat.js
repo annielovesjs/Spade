@@ -1,5 +1,6 @@
 let socket = io();
 let message = document.getElementById("message");
+let usernameHost = document.getElementById("usernameHost");
 let username = document.getElementById("username");
 let chatID = document.getElementById("chatID");
 let send_message = document.getElementById("send_message");
@@ -13,36 +14,51 @@ let chatroomTitle = document.getElementById("chatroomTitle");
 let card = document.getElementById("card");
 let card_back = document.getElementById("card_back");
 let reenter_room = document.getElementById("reenter_room");
+let unlock_room = document.getElementById("unlock_room");
+let landingPage = document.getElementsByClassName("landingPage")[0];
+let createRoomPage = document.getElementById("createRoomPage");
+let create_room_direct = document.getElementById("create_room_direct");
 let join_chat_direct = document.getElementById("join_chat_direct");
+let joiningPage = document.getElementsByClassName("joiningPage")[0];
 let joinRoomForm = document.getElementById("joinRoomForm");
 let intro = document.getElementsByClassName("intro")[0];
 let nameError = document.getElementById("nameError");
 let roomNameError = document.getElementById("roomNameError");
+let nameJoinError = document.getElementById("nameJoinError");
 let imgPicker = document.getElementById("imagePicker");
-let input_zone = document.getElementById("input_zone");
 let inputPad = document.getElementsByClassName("inputPad")[0];
 
 const audio = new Audio("Quack.mp3");
+makeAnnouncement("Send help# in chat to see useful features");
 
-username.focus();
+usernameHost.focus();
 window.notificationCount = 0;
 
-document.addEventListener("visibilitychange", function () {
-	if (!document.hidden) {
-		document.title = "Spade";
-		window.notificationCount = 0;
+function makeAnnouncement(messageStr) {
+	createAndAddHtmlElement("p", "announcement", messageStr, chatroom);
+	chatroom.scrollTop = chatroom.scrollHeight;
+}
+
+function createAndAddHtmlElement(divType, className, htmlElStr, parentDiv) {
+	let el = document.createElement(divType);
+	el.classList.add(className);
+	el.innerHTML = htmlElStr;
+	parentDiv.appendChild(el);
+}
+
+function createEnterEvent(e, desiredEl) {
+	if (e.key === "Enter") {
+		e.preventDefault();
+		desiredEl.click();
 	}
-});
+}
 
 function openGallery(e) {
-	console.log(e);
 	let galleryWindow = document.createElement("div");
 	galleryWindow.classList.add("galleryWindow");
-	let galleryNav = document.createElement("div");
-	galleryNav.classList.add("galleryNav");
-	galleryNav.innerHTML =
+	let innerHtmlEl =
 		"<div class='icon galleryExit' onclick='closeGallery()'><img src='exit.svg'/></div>";
-	galleryWindow.append(galleryNav);
+	createAndAddHtmlElement("div", "galleryNav", innerHtmlEl, galleryWindow);
 	let imgGallery = document.createElement("img");
 	imgGallery.src = e.src;
 	galleryWindow.append(imgGallery);
@@ -57,6 +73,7 @@ function removeImage() {
 	document.getElementById("imagePicker").value = null;
 	document.getElementsByClassName("thumbnail")[0].remove();
 	inputPad.style.padding = "0px";
+	message.focus();
 }
 
 function handleFileSelect(evt) {
@@ -91,6 +108,7 @@ function handleFileSelect(evt) {
 				].join("");
 				inputPad.style.padding = "15px";
 				inputPad.insertBefore(span, inputPad.childNodes[0]);
+				message.focus();
 			};
 		})(f);
 
@@ -99,42 +117,74 @@ function handleFileSelect(evt) {
 	}
 }
 
+document.addEventListener("visibilitychange", function () {
+	if (!document.hidden) {
+		document.title = "Spade";
+		window.notificationCount = 0;
+	}
+});
+
 imgPicker.addEventListener("change", handleFileSelect, false);
 
+//listen to esc key
 document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 	if (e.key == "Escape") {
-		chatroom.innerHTML = "";
+		let gallery = document.getElementsByClassName("galleryWindow")[0];
+		if (gallery) {
+			gallery.remove();
+		} else {
+			chatroom.innerHTML = "";
+		}
 	}
 });
 
 //join game redirect
 join_chat_direct.addEventListener("click", () => {
-	if (username.value) {
-		chatID.style.display = "inline-block";
-		send_username.style.display = "inline-block";
-		joinRoomForm.style.display = "none";
-		intro.style.display = "none";
-	} else {
-		nameError.style.display = "block";
-	}
+	landingPage.style.display = "none";
+	joiningPage.style.display = "flex";
+	username.focus();
 });
 
-//emit a username
+//create game redirect
+create_room_direct.addEventListener("click", () => {
+	landingPage.style.display = "none";
+	createRoomPage.style.display = "flex";
+	usernameHost.focus();
+});
+
+//join chat room
 send_username.addEventListener("click", () => {
 	if (chatID.value) {
 		user = username.value;
-		socket.emit("change_username", {
+		socket.emit("create_or_join_room", {
 			username: username.value,
-			gameRoom: chatID.value,
+			gameRoom: chatID.value.toLowerCase(),
+			hosting: false,
 		});
 	} else {
 		roomNameError.style.display = "block";
 	}
 });
 
+//check for invalid room
+socket.on("invalid_code", () => {
+	roomNameError.innerHTML = "Invalid room, please double check the code.";
+	roomNameError.style.display = "block";
+});
+
+//check for name already exists error
+socket.on("name_exists", () => {
+	nameJoinError.innerHTML = "Name is already taken by another user in the chat";
+	nameJoinError.style.display = "block";
+});
+
+//create room button
 create_room.addEventListener("click", () => {
-	if (username.value) {
-		socket.emit("create_room", { username: username.value });
+	if (usernameHost.value) {
+		socket.emit("create_or_join_room", {
+			username: usernameHost.value,
+			hosting: true,
+		});
 	} else {
 		nameError.style.display = "block";
 	}
@@ -148,39 +198,26 @@ socket.on("successfully_joined", (data) => {
 });
 
 chatID.addEventListener("keyup", (e) => {
-	if (e.key === "Enter") {
-		// Cancel the default action, if needed
-		e.preventDefault();
-		// Trigger the button element with a click
-		send_username.click();
-	}
+	createEnterEvent(e, send_username);
 });
 
 //listen on enter key for username
-username.addEventListener("keyup", (e) => {
-	if (e.key === "Enter") {
-		// Cancel the default action, if needed
-		e.preventDefault();
-		// Trigger the button element with a click
-		create_room.click();
-	}
+usernameHost.addEventListener("keyup", (e) => {
+	createEnterEvent(e, create_room);
 });
 
 //listen on new message
 socket.on("new_message", (data) => {
+	let innerHtmlEl;
 	if (data.message) {
-		let text = document.createElement("div");
-		text.classList.add("messageText");
-		text.innerHTML =
+		innerHtmlEl =
 			"<p class='message'>" + data.username + ": " + data.message + "</p>";
-		chatroom.appendChild(text);
+		createAndAddHtmlElement("div", "messageText", innerHtmlEl, chatroom);
 	}
 
 	if (data.hasImage) {
-		let img = document.createElement("div");
-		img.classList.add("messageText");
-		img.innerHTML = "<img class='messageImg' src='" + data.image + "'/>";
-		chatroom.appendChild(img);
+		innerHtmlEl = "<img class='messageImg' src='" + data.image + "'/>";
+		createAndAddHtmlElement("div", "messageText", innerHtmlEl, chatroom);
 	}
 	chatroom.scrollTop = chatroom.scrollHeight;
 	if (document.hidden) {
@@ -195,44 +232,40 @@ socket.on("new_message", (data) => {
 //listen to quack
 socket.on("quack", () => {
 	socket.quack = true;
+	makeAnnouncement("quack has been enabled");
 });
 
 //listen to unquack
 socket.on("noquack", () => {
 	socket.quack = false;
+	makeAnnouncement("quack has been disabled");
 });
 
 //listen on help
 socket.on("help", () => {
-	let text = document.createElement("div");
-	text.classList.add("messageText");
-	text.innerHTML =
-		"<p class='message'>Hit esc key: to erase your chat of content </br></br>Enter wipe# in Chat: Wipes all content from the chat for everyone in the room</br></br> Enter s# in Chat: Locks the chat. You can unlock by entering the room code.  </p>";
-	chatroom.appendChild(text);
-	chatroom.scrollTop = chatroom.scrollHeight;
+	makeAnnouncement("Hit esc key: to erase your chat of content");
+	makeAnnouncement(
+		"Enter wipe# in Chat: Wipes all content from the chat for everyone in the room"
+	);
+	makeAnnouncement(
+		"Enter s# in Chat: Locks the chat. You can unlock by entering the room code."
+	);
 });
 
 //listen on wipe chat
-socket.on("wipe", () => {
+socket.on("wipe", (data) => {
 	chatroom.innerHTML = "";
+	makeAnnouncement(data.username + " has cleared the chat");
 });
 
 //listen on new member join
 socket.on("new_member", (data) => {
-	let text = document.createElement("p");
-	text.classList.add("announcement");
-	text.innerHTML = data.username + " has joined the chat";
-	chatroom.appendChild(text);
-	chatroom.scrollTop = chatroom.scrollHeight;
+	makeAnnouncement(data.username + " has joined the chat");
 });
 
 //listen on member left
 socket.on("member_left", (data) => {
-	let text = document.createElement("p");
-	text.classList.add("announcement");
-	text.innerHTML = data.username + " has left the chat";
-	chatroom.appendChild(text);
-	chatroom.scrollTop = chatroom.scrollHeight;
+	makeAnnouncement(data.username + " has left the chat");
 });
 
 //emit message
@@ -248,20 +281,20 @@ send_message.addEventListener("click", () => {
 				: document.getElementById("thumb").src,
 		});
 		if (message.value) {
-			let text = document.createElement("div");
-			text.classList.add("myMessageText");
-			text.innerHTML = "<p class='myMessage'>" + message.value + "</p>";
-			chatroom.appendChild(text);
+			createAndAddHtmlElement(
+				"div",
+				"myMessageText",
+				"<p class='myMessage'>" + message.value + "</p>",
+				chatroom
+			);
 		}
 
 		if (imgPicker.files.length > 0) {
-			let img = document.createElement("div");
-			img.classList.add("myMessageText");
-			img.innerHTML =
+			let innerHtmlEl =
 				"<img class='messageImg' onclick='openGallery(this)' src='" +
 				document.getElementById("thumb").src +
 				"'/>";
-			chatroom.appendChild(img);
+			createAndAddHtmlElement("div", "myMessageText", innerHtmlEl, chatroom);
 			document.getElementsByClassName("thumbnail")[0].remove();
 		}
 		chatroom.scrollTop = chatroom.scrollHeight;
@@ -279,12 +312,8 @@ message.addEventListener("keydown", () => {
 
 //check if stopped typing or if enter key is hit
 message.addEventListener("keyup", (e) => {
-	if (e.key === "Enter") {
-		// Cancel the default action, if needed
-		e.preventDefault();
-		// Trigger the button element with a click
-		send_message.click();
-	} else {
+	createEnterEvent(e, send_message);
+	if (e.key !== "Enter") {
 		clearTimeout(typingTimer);
 		if (message.value) {
 			typingTimer = setTimeout(() => {
@@ -300,16 +329,16 @@ socket.on("lock", () => {
 	reenter_room.focus();
 });
 
-//listen on enter key for username
-reenter_room.addEventListener("keyup", (e) => {
-	if (e.key === "Enter") {
-		// Cancel the default action, if needed
-		e.preventDefault();
-		// Trigger the button element with a click
-		socket.emit("unlock", { code: reenter_room.value });
-	}
+unlock_room.addEventListener("click", () => {
+	socket.emit("unlock", { code: reenter_room.value });
 });
 
+//listen on enter key for username
+reenter_room.addEventListener("keyup", (e) => {
+	createEnterEvent(e, unlock_room);
+});
+
+//unlock room
 socket.on("unlock", () => {
 	card_back.style.display = "none";
 	message.focus();
@@ -319,6 +348,8 @@ socket.on("unlock", () => {
 socket.on("typing", (data) => {
 	feedback.innerHTML = "<i>" + data.username + " is typing ... </i>";
 });
+
+//listen on stopped typing event
 socket.on("stopped_typing", (data) => {
 	feedback.innerHTML = "";
 });
@@ -326,7 +357,6 @@ socket.on("stopped_typing", (data) => {
 //send close connection
 exit.addEventListener("click", () => {
 	axios.get("/").then(() => {
-		socket.emit("close_connection");
 		location.reload();
 	});
 });

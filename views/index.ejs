@@ -12,16 +12,14 @@
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
 		<link rel="icon" href="icon.svg" />
-
 		<title>Spade</title>
 	</head>
-
 	<body>
 		<section id="card">
 			<section id="card_back">
 				<img src="logo_filled.svg" />
-
 				<input id="reenter_room" type="text" placeholder="Chatroom Code" />
+				<button type="button" id="unlock_room">Unlock</button>
 			</section>
 			<div class="chatroom_nav">
 				<img class="logo" src="logo_filled.svg" />
@@ -34,35 +32,54 @@
 				<div id="myModal" class="modal">
 					<!-- Modal content -->
 					<div class="modal-content">
-						<div class="intro">
-							<h3>Welcome to Spade</h3>
-							<h4>A discrete messaging app</h4>
-							<p><i>Hint: Press esc key to clear chat content</i></p>
+						<div class="landingPage">
+							<div class="intro">
+								<h3>Welcome to Spade</h3>
+								<h4>A discrete messaging app</h4>
+								<p><i>Hint: Press esc key to clear chat content</i></p>
+							</div>
+							<div id="joinRoomForm">
+								<button id="create_room_direct" type="button">
+									Start New Chat
+								</button>
+								<button id="join_chat_direct" type="button">Join Chat</button>
+							</div>
 						</div>
-						<div id="joinRoomForm">
+						<div id="createRoomPage">
 							<p class="error" id="nameError">Please enter a name</p>
-							<input id="username" placeholder="Enter name ... " type="text" />
-
-							<button id="create_room" type="button">Start New Chat</button>
-							<button id="join_chat_direct" type="button">Join Chat</button>
-						</div>
-						<div id="enter_room_form">
-							<p class="error" id="roomNameError">
-								Please enter valid room code
-							</p>
 							<input
-								id="chatID"
-								placeholder="Enter chatroom code ... "
+								id="usernameHost"
+								placeholder="Enter name ... "
 								type="text"
 							/>
-							<button id="send_username" type="button">Enter Chat Room</button>
+							<button id="create_room" type="button">Create New Chat</button>
+						</div>
+						<div class="joiningPage">
+							<div id="enter_room_form">
+								<p class="error" id="nameJoinError">Please enter a name</p>
+								<input
+									id="username"
+									placeholder="Enter name ... "
+									type="text"
+								/>
+								<p class="error" id="roomNameError">
+									Please enter valid room code
+								</p>
+								<input
+									id="chatID"
+									placeholder="Enter chatroom code ... "
+									type="text"
+								/>
+								<button id="send_username" type="button">
+									Enter Chat Room
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 				<section id="chatroom"></section>
 				<section id="card_bottom">
 					<section id="feedback"></section>
-
 					<section id="input_zone">
 						<div class="inputIcon icon">
 							<label for="imagePicker">
@@ -90,7 +107,6 @@
 				</section>
 			</section>
 		</section>
-
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 		<script src="chat.js"></script>
 	</body>

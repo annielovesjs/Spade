@@ -20,33 +20,39 @@ const io = require("socket.io")(server);
 
 const Spade = require("./Spade");
 app.spade = new Spade();
+console.log("server created");
 
 //listen on every connection
 io.on("connection", (socket) => {
 	console.log("new user connected");
-	//listen on change username -- merge with create room later
-	socket.on("change_username", (data) => {
+	socket.on("create_or_join_room", (data) => {
+		let chatroom;
+		let chatroomId;
+		if (data.hosting) {
+			chatroom = app.spade.createNewChat();
+		} else {
+			chatroom = app.spade.findChat(data.gameRoom);
+			if (!chatroom) {
+				socket.emit("invalid_code");
+				return;
+			}
+			if (chatroom.findPlayer(data.username)) {
+				socket.emit("name_exists");
+				return;
+			}
+		}
+		chatroomId = chatroom.code;
+		app.spade.findChat(chatroomId).addPlayer(data.username);
 		socket.username = data.username;
-		socket.gameRoom = data.gameRoom;
-		socket.join(data.gameRoom);
-		console.log("this is joined: " + data.gameRoom);
-		socket.emit("successfully_joined", { gameRoom: data.gameRoom });
+		socket.gameRoom = chatroomId;
+		socket.join(chatroomId);
+		app.spade.addUserRecord(socket.id, chatroomId);
+		socket.emit("successfully_joined", { gameRoom: chatroomId });
 		socket
 			.to(socket.gameRoom)
 			.emit("new_member", { username: socket.username });
 	});
 
-	socket.on("create_room", (data) => {
-		let gameRoomId = app.spade.createNewChat();
-		socket.username = data.username;
-		socket.gameRoom = gameRoomId;
-		console.log(socket.gameRoom);
-		socket.join(gameRoomId);
-		socket.emit("successfully_joined", { gameRoom: gameRoomId });
-		socket
-			.to(socket.gameRoom)
-			.emit("new_member", { username: socket.username });
-	});
 	//listen on new message and broadcast to all senders
 	socket.on("new_message", (data) => {
 		console.log("this is my id: " + socket.gameRoom);
@@ -55,7 +61,7 @@ io.on("connection", (socket) => {
 		} else if (data.message == "help#") {
 			socket.emit("help");
 		} else if (data.message == "wipe#") {
-			io.in(socket.gameRoom).emit("wipe");
+			io.in(socket.gameRoom).emit("wipe", { username: socket.username });
 		} else if (data.message == "quack#") {
 			socket.emit("quack");
 		} else if (data.message == "noquack#") {
@@ -87,17 +93,17 @@ io.on("connection", (socket) => {
 	socket.on("stopped_typing", () => {
 		socket.to(socket.gameRoom).emit("stopped_typing");
 	});
-	//listen for disconnect event
-	socket.on("close_connection", () => {
-		console.log("disconnect");
-		io.in(socket.gameRoom).emit("member_left", { username: socket.username });
-
-		socket.disconnect();
-	});
 
 	//listen for organic disconnect
 	socket.on("disconnect", () => {
-		console.log("organic disconnect");
-		io.in(socket.gameRoom).emit("member_left", { username: socket.username });
+		console.log("disconnected " + socket.id);
+		if (app.spade.findRoomBasedOnId(socket.id)) {
+			let gameId = app.spade.findRoomBasedOnId(socket.id).code;
+			app.spade.findChat(gameId).removePlayer(socket.username);
+			if (app.spade.findChat(gameId).isEmpty()) {
+				app.spade.removeChat(gameId);
+			}
+			io.in(socket.gameRoom).emit("member_left", { username: socket.username });
+		}
 	});
 });

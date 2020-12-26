@@ -35,10 +35,22 @@ input {
 button {
 	font-family: "Open Sans";
 	font-size: 2.5vh;
-	padding: 5px;
+	background: #383838;
+	border: 1px solid #383838;
+	color: white;
+	cursor: pointer;
+	margin: 1vh 0vh;
+	border-radius: 5px;
+	padding: 1.5vh;
 }
 
-header {
+button:hover {
+	background: black;
+	border: 1px solid black;
+}
+
+header,
+.intro {
 	text-align: center;
 }
 
@@ -47,16 +59,23 @@ h1 {
 	margin: 0px;
 }
 
-.intro {
-	text-align: center;
-}
-
 .intro h3 {
 	font-size: 4vh;
 }
 
 .intro h4 {
 	font-size: 2.3vh;
+}
+
+.joiningPage,
+#createRoomPage {
+	display: none;
+}
+
+.landingPage,
+#createRoomPage {
+	align-items: center;
+	flex-direction: column;
 }
 
 div#joinRoomForm {
@@ -74,11 +93,6 @@ div#joinRoomForm {
 	top: 0;
 	color: #961010;
 	font-style: italic;
-}
-
-#nameError,
-#roomNameError {
-	display: none;
 }
 
 #card {
@@ -201,12 +215,9 @@ div#joinRoomForm {
 	border: 3px solid #cfbe88;
 }
 
-.icon label {
+.icon label,
+#send_message {
 	cursor: pointer;
-}
-
-#imagePicker {
-	display: none;
 }
 
 section#chatroom {
@@ -328,10 +339,6 @@ input#message {
 	justify-content: flex-end;
 }
 
-#send_message {
-	cursor: pointer;
-}
-
 #send_message img {
 	width: 6vh;
 }
@@ -353,37 +360,21 @@ input#message {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	/* align-items: center; */
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-}
-
-.modal-content button {
-	background: #383838;
-	border: 1px solid #383838;
-	color: white;
-	cursor: pointer;
-	margin: 1vh 0vh;
-	border-radius: 5px;
-	padding: 1.5vh;
 }
 
 .modal-content input {
 	margin-bottom: 1.5vh;
 }
 
-.modal-content button:hover {
-	background: black;
-	border: 1px solid black;
-}
-
-#chatID {
+#imagePicker,
+#nameError,
+#roomNameError,
+#nameJoinError {
 	display: none;
-}
-
-#send_username {
-	display: none;
+	position: relative;
 }
 
 #enter_room_form {

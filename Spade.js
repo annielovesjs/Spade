@@ -3,24 +3,36 @@ const Chatroom = require("./Chatroom");
 class Spade {
 	constructor() {
 		this.chatrooms = {};
+		this.userIDToRoom = {};
+	}
+
+	addUserRecord(userId, roomId) {
+		this.userIDToRoom[userId] = roomId;
+		console.log("mapping: " + userId + " to " + roomId);
+	}
+
+	findRoomBasedOnId(userId) {
+		return this.chatrooms[this.userIDToRoom[userId]];
 	}
 
 	createNewChat() {
 		let code = this.generateCode();
-		this.chatrooms[code] = new Chatroom(code, this.removeChat);
+		this.chatrooms[code] = new Chatroom(code);
 		console.log("created room: " + code);
-		return code;
+		return this.chatrooms[code];
 	}
 
 	findChat(code) {
-		if (code) {
+		let chatResult = this.chatrooms[code];
+		if (chatResult) {
 			return this.chatrooms[code];
+		} else {
+			return false;
 		}
 	}
 
 	generateCode() {
 		const possible = "abcdefghijklmnopqrstuvwxyz";
-
 		let code;
 		do {
 			//generate 5 letter code
@@ -34,8 +46,13 @@ class Spade {
 	}
 
 	removeChat(code) {
-		this.chatrooms.delete(code);
 		console.log("removed this chat : " + code);
+		console.log(this.chatrooms);
+		delete this.chatrooms[code];
+	}
+
+	clearSpadeRecords() {
+		this.chatrooms = {};
 	}
 }
 

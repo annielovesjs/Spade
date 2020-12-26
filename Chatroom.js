@@ -1,28 +1,23 @@
-const Player = require("./Player");
-
 class Chatroom {
-	constructor(code, removePlayerFn) {
+	constructor(code) {
 		this.players = [];
 		this.code = code;
-		this.removePlayerFn = removePlayerFn;
 	}
 
-	addPlayer(socket, name) {
-		const player = new Player(socket, name);
-		//TODO: notify new person joined the chat
-		this.attachListeners(player);
-		this.players.push[player];
+	addPlayer(name) {
+		this.players.push(name);
 	}
 
-	attachListeners(player) {
-		const { socket } = player;
+	findPlayer(name) {
+		return this.players.includes(name);
 	}
 
 	removePlayer(player) {
-		player.socket.disconnect(true);
-		if (this.players.length == 0) {
-			this.removePlayerFn();
-		}
+		this.players = this.players.filter((user) => user !== player);
+	}
+
+	isEmpty() {
+		return this.players.length == 0;
 	}
 }
 
