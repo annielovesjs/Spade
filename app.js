@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 
 server = app.listen(process.env.PORT || 3000);
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, { maxHttpBufferSize: 10e6 });
 
 const Spade = require("./Spade");
 app.spade = new Spade();

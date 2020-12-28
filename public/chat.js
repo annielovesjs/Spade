@@ -102,7 +102,7 @@ function handleFileSelect(evt) {
 				if (thumbnailExists) {
 					thumbnailExists.remove();
 				}
-				// Render thumbnail.
+				// Render thumbnai
 				var span = document.createElement("span");
 				span.classList.add("thumbnail");
 				span.innerHTML = [
@@ -228,7 +228,10 @@ socket.on("new_message", (data) => {
 	}
 
 	if (data.hasImage) {
-		innerHtmlEl = "<img class='messageImg' src='" + data.image + "'/>";
+		innerHtmlEl =
+			"<img class='messageImg' onclick='openGallery(this)' src='" +
+			data.image +
+			"'/>";
 		createAndAddHtmlElement("div", "messageText", innerHtmlEl, chatroom);
 	}
 	chatroom.scrollTop = chatroom.scrollHeight;
