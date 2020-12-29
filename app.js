@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 	res.render("index");
 });
 
-server = app.listen(process.env.PORT || 80);
+server = app.listen(process.env.PORT || 3000);
 
 const io = require("socket.io")(server, { maxHttpBufferSize: 10e6 });
 
