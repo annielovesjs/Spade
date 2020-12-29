@@ -1,23 +1,23 @@
 class Chatroom {
 	constructor(code) {
-		this.players = [];
+		this.users = [];
 		this.code = code;
 	}
 
-	addPlayer(name) {
-		this.players.push(name);
+	addUser(name) {
+		this.users.push(name);
 	}
 
-	findPlayer(name) {
-		return this.players.includes(name);
+	findUser(name) {
+		return this.users.includes(name);
 	}
 
-	removePlayer(player) {
-		this.players = this.players.filter((user) => user !== player);
+	removeUser(username) {
+		this.users = this.users.filter((user) => user !== username);
 	}
 
 	isEmpty() {
-		return this.players.length == 0;
+		return this.users.length == 0;
 	}
 }
 

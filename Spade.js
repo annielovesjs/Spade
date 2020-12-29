@@ -18,7 +18,6 @@ class Spade {
 	createNewChat() {
 		let code = this.generateCode();
 		this.chatrooms[code] = new Chatroom(code);
-		console.log("created room: " + code);
 		return this.chatrooms[code];
 	}
 
@@ -47,8 +46,8 @@ class Spade {
 
 	removeChat(code) {
 		console.log("removed this chat : " + code);
-		console.log(this.chatrooms);
 		delete this.chatrooms[code];
+		console.log(this.chatrooms);
 	}
 
 	clearSpadeRecords() {

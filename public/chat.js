@@ -35,6 +35,10 @@ makeAnnouncement("Send help# in chat to see useful features");
 usernameHost.focus();
 window.notificationCount = 0;
 
+window.addEventListener("hashchange", function (e) {
+	console.log("bacck");
+});
+
 function makeAnnouncement(messageStr) {
 	createAndAddHtmlElement("p", "announcement", messageStr, chatroom);
 	chatroom.scrollTop = chatroom.scrollHeight;
@@ -75,11 +79,15 @@ function closeGallery() {
 	document.getElementsByClassName("galleryWindow")[0].remove();
 }
 
+function focusMessage() {
+	message.focus();
+}
+
 function removeImage() {
 	document.getElementById("imagePicker").value = null;
 	document.getElementsByClassName("thumbnail")[0].remove();
 	inputPad.style.padding = "0px";
-	message.focus();
+	focusMessage();
 }
 
 function handleFileSelect(evt) {
@@ -114,7 +122,7 @@ function handleFileSelect(evt) {
 				].join("");
 				inputPad.style.padding = "15px";
 				inputPad.insertBefore(span, inputPad.childNodes[0]);
-				message.focus();
+				focusMessage();
 			};
 		})(f);
 
@@ -144,14 +152,14 @@ document.getElementsByTagName("body")[0].addEventListener("keyup", (e) => {
 	}
 });
 
-//join game redirect
+//join chat redirect
 join_chat_direct.addEventListener("click", () => {
 	landingPage.style.display = "none";
 	joiningPage.style.display = "flex";
 	username.focus();
 });
 
-//create game redirect
+//create chat redirect
 create_room_direct.addEventListener("click", () => {
 	landingPage.style.display = "none";
 	createRoomPage.style.display = "flex";
@@ -165,7 +173,7 @@ send_username.addEventListener("click", () => {
 			user = username.value;
 			socket.emit("create_or_join_room", {
 				username: username.value,
-				gameRoom: chatID.value.toLowerCase(),
+				chatRoom: chatID.value.toLowerCase(),
 				hosting: false,
 			});
 			roomNameError.style.display = "none";
@@ -202,11 +210,11 @@ create_room.addEventListener("click", () => {
 	}
 });
 
-//admit to game room
+//admit to chat room
 socket.on("successfully_joined", (data) => {
 	modal.style.display = "none";
-	chatroomTitle.innerHTML = "Room: " + data.gameRoom;
-	message.focus();
+	chatroomTitle.innerHTML = "Room: " + data.chatRoom;
+	focusMessage();
 });
 
 chatID.addEventListener("keyup", (e) => {
@@ -316,7 +324,7 @@ send_message.addEventListener("click", () => {
 		message.value = "";
 		imgPicker.value = null;
 	}
-	message.focus();
+	focusMessage();
 });
 
 let typingTimer;
@@ -364,7 +372,7 @@ reenter_room.addEventListener("keyup", (e) => {
 socket.on("unlock", () => {
 	card_back.style.display = "none";
 	unlockError.style.display = "none";
-	message.focus();
+	focusMessage();
 });
 
 //listen on typing event
